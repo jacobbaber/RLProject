@@ -93,8 +93,8 @@ class State:
             self.p1.feedReward(-1)
             self.p2.feedReward(1)
         else:
-              self.p1.feedReward(0.1)
-              self.p2.feedReward(0.5)
+              self.p1.feedReward(0)
+              self.p2.feedReward(0)
 
     def playAgent(self, episodes = 100):
           for i in range(episodes):
@@ -238,11 +238,17 @@ class Agent:
           self.totalReward = self.totalReward + reward
 
           self.averageReward.append(self.totalReward/self.numEpisodes)
-               
+      
+          terminalState = True
           for s in reversed(self.states):
                 if self.states_value.get(s) is None:
                     self.states_value[s] = 0
-                self.states_value[s] = self.states_value[s] + self.alpha * (self.gamma * reward - self.states_value[s])
+                if terminalState is True:
+                  self.states_value[s] = self.states_value[s] + self.alpha * (reward - self.states_value[s])
+                  terminalState = False
+                else:
+                     self.states_value[s] = self.states_value[s] + self.alpha * (self.gamma * reward - self.states_value[s])
+                     
                 reward = self.states_value[s]
 
     def getHash(self, board):
@@ -329,7 +335,7 @@ rando = RandomAgent("rando")
 
 human = HumanPlayer("human")
 
-st = State(agent, agent2)
+st = State(rando, agent)
 
 agent.loadPolicy('policy_agent.json')
 
@@ -337,15 +343,15 @@ st.playAgent(100000)
 
 agent.savePolicy()
 
-plt.plot(range(100000),agent2.averageReward)
+plt.plot(range(100000),agent.averageReward)
 
 plt.xlabel("Episode")
 
 plt.ylabel("Average total reward")
 
-plt.xlim(100,100000)
+plt.xlim(10,100000)
 
-plt.title("Average total reward over 100,000 episodes versus random agent")
+plt.title("Average total reward of agent going first over 100,000 episodes versus random agent")
     
 plt.show()                    
     
