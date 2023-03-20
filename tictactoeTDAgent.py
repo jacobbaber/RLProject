@@ -113,7 +113,6 @@ class State:
 
                       win = self.winner()
                       if win is not None:
-                            # self.showBoard()
                             # ended with p1 either win or draw
                             self.giveReward()
                             self.p1.reset()
@@ -192,7 +191,7 @@ class State:
                       
 
 class Agent:
-    def __init__(self, name, epsilon=.1):
+    def __init__(self, name, epsilon=.1, epsilonDecay = 0):
             self.name = name
             self.states = []
             self.alpha = 0.1
@@ -202,6 +201,7 @@ class Agent:
             self.numEpisodes = 0
             self.averageReward = []
             self.totalReward = 0
+            self.epsilonDecay = epsilonDecay
 
 
 
@@ -236,7 +236,11 @@ class Agent:
     def feedReward(self, reward):
           self.numEpisodes = self.numEpisodes + 1
           self.totalReward = self.totalReward + reward
-
+          if (self.epsilonDecay == 0):
+               self.linearDecayEpsilon()
+          elif (self.epsilonDecay == 1):
+               self.exponentialDecayEpsilon()
+      
           self.averageReward.append(self.totalReward/self.numEpisodes)
       
           terminalState = True
@@ -254,6 +258,13 @@ class Agent:
     def getHash(self, board):
           boardHash = str(board)
           return boardHash
+    
+    def linearDecayEpsilon(self):
+         self.epsilon = self.epsilon - 0.000001
+
+    def exponentialDecayEpsilon(self):
+         self.epsilon = self.epsilon * (0.001/1)**(1/1000000)
+             
 
     def savePolicy(self):
           fw = open('policy_' + str(self.name) + '.json', 'w')
@@ -327,31 +338,61 @@ class HumanPlayer:
     def loadPolicy(self):
          pass
 
-agent = Agent("agent")
+agent = Agent("agent", 1, 0)
 
-agent2 = Agent("agent2")
+agent2 = Agent("agent2", 1, 1)
+
+staticAgent = Agent("static1", 0.1, 2)
+
+staticAgent2 = Agent("static2", 0.1, 2)
 
 rando = RandomAgent("rando")
 
 human = HumanPlayer("human")
 
-st = State(rando, agent)
+st = State(agent, staticAgent)
+
+st2 = State(agent2, staticAgent2)
 
 agent.loadPolicy('policy_agent.json')
 
-st.playAgent(100000)
+agent2.loadPolicy('policy_agent2.json')
+
+##staticAgent.loadPolicy('policy_static.json')
+
+##staticAgent2.loadPolicy('policy_static2.json')
+
+st.playAgent(2000000)
+
+st2.playAgent(2000000)
 
 agent.savePolicy()
 
-plt.plot(range(100000),agent.averageReward)
+plt.plot(range(2000000),agent.averageReward, label = "Linear Decay")
+plt.plot(range(2000000),agent2.averageReward, label = "Exponential Decay")
+plt.legend()
 
-plt.xlabel("Episode")
+plt.xlabel("Episode (Per Million)")
 
 plt.ylabel("Average total reward")
 
-plt.xlim(10,100000)
+plt.xlim(10,2000000)
 
-plt.title("Average total reward of agent going first over 100,000 episodes versus random agent")
+plt.title("Going first over 2,000,000 episodes versus static TD agent")
+
+
+#mean = sum(agent.averageReward) / len(agent.averageReward)
+
+#variance = sum([((x - mean) ** 2) for x in agent.averageReward]) / len(agent.averageReward)
+
+
+#res = variance ** 0.5
+
+#print("Average Reward" + str(agent.averageReward[len(agent.averageReward) - 1]))
+
+#print("Stanard Deviation" + str(res))
+
+#print(str(res))
     
 plt.show()                    
     

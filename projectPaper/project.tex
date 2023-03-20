@@ -118,9 +118,14 @@
 ]
 
 \section*{1. Domain}
-The domain of our project is the popular game Tic-Tac-Toe. It is a two player game where each player will take turns playing down their individual symbol on a 3x3 grid, and the first player to connect three of their symbols in a row wins.
+\subsection*{1.1. The Game}
+The domain of our project is the popular game Tic-Tac-Toe. It is a two player game where each player will take turns playing down their individual symbol on a 3x3 grid, and the first player to connect three of their symbols (X's or O's) horizontally, vertically, or diagonally wins.
 
+\subsection*{1.2. The Environment}
 
+For this project, we created our own environment of the game Tic-Tac-Toe. This environment simulates the 3x3 board as well as the rules and win conditions of the game. Using this environment, the agent will be able to take an action whenever it is their turn, and the action space consists of the cells of the board that do not already have a symbol in them. When the game comes to a conclusion, the agent will receive an reward based on if they won, loss, or drew.
+
+\section*{Hypotheses}
 % this must go after the closing bracket ] following \twocolumn[ ...
 
 % This command actually creates the footnote in the first column

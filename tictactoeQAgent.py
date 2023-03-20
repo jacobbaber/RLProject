@@ -357,22 +357,31 @@ st = State(qAgent, rando)
 
 qAgent.loadPolicy('policy_qAgent.json')
 
-st.playAgent(100000)
+st.playAgent(1000000)
 
 qAgent.savePolicy()
 
-plt.plot(range(100000),qAgent.averageReward)
+plt.plot(range(1000000),qAgent.averageReward)
 
 plt.xlabel("Episode")
 
 plt.ylabel("Average total reward")
 
-plt.xlim(10,100000)
+plt.xlim(10,1000000)
 
 plt.title("Average total reward of agent going first over 100,000 episodes versus random agent")
+
+print("Average Reward" + str(qAgent.averageReward[len(qAgent.averageReward) - 1]))
+
+mean = sum(qAgent.averageReward) / len(qAgent.averageReward)
+
+variance = sum([((x - mean) ** 2) for x in qAgent.averageReward]) / len(qAgent.averageReward)
+
+res = variance ** 0.5
+
+print("Stanard Deviation" + str(res))
     
-plt.show()            
-    
+plt.show()             
         
 
 
